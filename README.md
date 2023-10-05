@@ -7,9 +7,9 @@
 Retrieves Images from any board and output them as a collection, to be used as a multi image input
 
 For Number of Images
-* Range Eg. `30-50` or `45-50, 68-78`
-* Group of single Images Eg. `4,23,45` or single image `567,`
-* one number Eg. `35` will give you last 35 images
+* Range of images Eg. `30-50` or `45-50, 68-78`
+* Group of single images Eg. `4,23,45` or a single image `567,`
+* Single number without the `,` Eg. `35` will give you last 35 images
 * `all` for all images
 
 ### Inputs
