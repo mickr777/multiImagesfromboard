@@ -26,7 +26,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
         )
 
         selected_images = []
-        
+
         if self.num_images.lower() == "all":
             selected_images = all_images_in_board
         else:
@@ -35,9 +35,13 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
                 if "-" in segment:
                     start, end = map(int, segment.split("-"))
                     selected_images.extend(all_images_in_board[-end : -start + 1])
-                else:
+                elif segment.isdigit():
                     index = int(segment)
-                    selected_images.append(all_images_in_board[-index])
+
+                    if len(segments) == 1:
+                        selected_images.extend(all_images_in_board[-index:])
+                    else:
+                        selected_images.append(all_images_in_board[-index])
 
         output_images = [ImageField(image_name=image_name) for image_name in selected_images]
 
