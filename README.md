@@ -6,8 +6,10 @@
 ## Description
 Retrieves Images from any board and output them as a collection, to be used as a multi image input
 
+You can use a range like '30-50' or 4,23,45 or or one number 35 will give you last 35 images or 'all' for all images
+
 ### Inputs
 | Parameter     | Description                                 
 |---------------|---------------------------------------------|
 | `input_board`  | Input board containing images to be retrieved.|
-| `num_images` | Number of images to retrieve from the end, a range like '30-50' or 4,23,45 or 'all' for all images.|
+| `num_images` | Number of images to retrieve from the end.|
