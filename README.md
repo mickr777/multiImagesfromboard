@@ -17,4 +17,5 @@ For Number of Images
 |---------------|---------------------------------------------|
 | `input_board`  | Input board containing images to be retrieved.|
 | `num_images` | Number of images to retrieve from the end.|
+| `save_metadata` | Save metadata as JSON files for each image.|
 | `save_to_zip` | Saves all retrieved images to a zip file.|
