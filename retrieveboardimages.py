@@ -1,3 +1,6 @@
+import os
+import zipfile
+import json
 from invokeai.app.invocations.baseinvocation import (
     BaseInvocation,
     InvocationContext,
@@ -9,8 +12,6 @@ from invokeai.app.invocations.primitives import (
     ImageCollectionOutput,
     BoardField,
 )
-import os
-import zipfile
 from pydantic import BaseModel
 
 
@@ -26,31 +27,42 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.1.0",
+    version="0.2.0",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation):
-    """Retrieve specified range or last n images from a board or all images if specified as 'all'"""
-
     input_board: BoardField = InputField(
         description="Input board containing images to be retrieved"
     )
-
     num_images: str = InputField(
         description="Number of images to retrieve from the end, a range like '30-50', or 'all' for all images.",
         default="all",
+    )
+    save_metadata: bool = InputField(
+        description="Save metadata as JSON files for each image.", default=False
     )
     save_to_zip: bool = InputField(
         description="Save all retrieved images to a ZIP file.", default=False
     )
 
+    def get_metadata(self, image_name, context):
+        metadata = context.services.image_records.get_metadata(image_name)
+
+        if metadata:
+            print(f"Metadata for image {image_name}: {metadata}")
+        else:
+            print(f"No metadata found for image {image_name}")
+
+        return metadata
+
     def invoke(self, context: InvocationContext) -> ImageCollectionOutput:
+        from invokeai.app.api.dependencies import ApiDependencies
+
         all_images_in_board = (
             context.services.board_images.get_all_board_image_names_for_board(
                 self.input_board.board_id
             )
         )
-        from invokeai.app.api.dependencies import ApiDependencies
 
         selected_images = []
 
@@ -71,7 +83,9 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
                         selected_images.append(all_images_in_board[-index])
 
         if self.save_to_zip:
-            board_name = context.services.boards.get_dto(self.input_board.board_id).board_name
+            board_name = context.services.boards.get_dto(
+                self.input_board.board_id
+            ).board_name
 
             zip_file_name = os.path.join(SCRIPT_DIR, f"{board_name}_images.zip")
             with zipfile.ZipFile(zip_file_name, "w") as zipf:
@@ -81,7 +95,25 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
                     )
                     zipf.write(image_path, os.path.basename(image_path))
 
+                    if self.save_metadata:
+                        metadata = context.services.image_records.get_metadata(
+                            image_name
+                        )
+
+                        # Debug: Print the retrieved metadata
+                        print(f"Metadata for image {image_name}: {metadata}")
+
+                        if metadata:
+                            metadata_json = metadata.model_dump_json(indent=4)
+
+                            json_file_name = f"{image_name}.json"
+                            with zipf.open(json_file_name, "w") as json_file:
+                                json_file.write(metadata_json.encode("utf-8"))
+
             result_message = f"Your images are saved in {zip_file_name}"
+            if self.save_metadata:
+                result_message += f" along with metadata files."
+
         else:
             result_message = ""
 
@@ -91,4 +123,3 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
         return ImageCollectionOutput(
             collection=output_images, zip_result=ImageZipResult(message=result_message)
         )
-
