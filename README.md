@@ -1,7 +1,8 @@
 # Retrieve Images from Board for multi image input
 ## Community Node For InvokeAI
 
-![image](https://github.com/mickr777/multiImagesfromboard/assets/115216705/860e2822-6b0a-4a11-ac44-652f66bd5169)
+![image](https://github.com/mickr777/multiImagesfromboard/assets/115216705/3ef4c7e0-e6cd-48c4-b3de-70ed1b160361)
+
 
 ## Description
 Retrieves Images from any board and output them as a collection, to be used as a multi image input
@@ -17,5 +18,5 @@ For Number of Images
 |---------------|---------------------------------------------|
 | `input_board`  | Input board containing images to be retrieved.|
 | `num_images` | Number of images to retrieve from the end.|
-| `save_metadata` | Save metadata as JSON files for each image.|
+| `save_metadata` | Save metadata as JSON files for each image if available.|
 | `save_to_zip` | Saves all retrieved images to a zip file.|
