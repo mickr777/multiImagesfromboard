@@ -27,7 +27,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.2.0",
+    version="0.2.1",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation):
@@ -63,6 +63,9 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
                 self.input_board.board_id
             )
         )
+
+        if not all_images_in_board:
+            raise ValueError("No images found for the specified board.")
 
         selected_images = []
 
