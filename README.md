@@ -20,3 +20,4 @@ For Number of Images
 | `num_images` | Number of images to retrieve from the end.|
 | `save_metadata` | Save metadata as JSON files for each image if available.|
 | `save_to_zip` | Saves all retrieved images to a zip file.|
+| `save_location` | Specify the save location for the ZIP file.|
