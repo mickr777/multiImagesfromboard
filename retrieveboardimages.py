@@ -27,7 +27,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.2.1",
+    version="0.2.3",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation):
@@ -43,6 +43,9 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
     )
     save_to_zip: bool = InputField(
         description="Save all retrieved images to a ZIP file.", default=False
+    )
+    save_location: str = InputField(
+        description="Specify the save location for the ZIP file."
     )
 
     def get_metadata(self, image_name, context):
@@ -86,12 +89,18 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
                         selected_images.append(all_images_in_board[-index])
 
         if self.save_to_zip:
-            board_name = context.services.boards.get_dto(
-                self.input_board.board_id
-            ).board_name
+            if self.save_location:
+                board_name = context.services.boards.get_dto(
+                    self.input_board.board_id
+                ).board_name
+                save_path = os.path.join(self.save_location, f"{board_name}_images.zip")
+            else:
+                board_name = context.services.boards.get_dto(
+                    self.input_board.board_id
+                ).board_name
+                save_path = os.path.join(SCRIPT_DIR, f"{board_name}_images.zip")
 
-            zip_file_name = os.path.join(SCRIPT_DIR, f"{board_name}_images.zip")
-            with zipfile.ZipFile(zip_file_name, "w") as zipf:
+            with zipfile.ZipFile(save_path, "w") as zipf:
                 for image_name in selected_images:
                     image_path = ApiDependencies.invoker.services.images.get_path(
                         image_name
@@ -113,7 +122,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
                             with zipf.open(json_file_name, "w") as json_file:
                                 json_file.write(metadata_json.encode("utf-8"))
 
-            result_message = f"Your images are saved in {zip_file_name}"
+            result_message = f"Your images are saved in {save_path}"
             if self.save_metadata:
                 result_message += f" along with metadata files."
 
