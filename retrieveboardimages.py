@@ -27,7 +27,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.3.5",
+    version="0.2.3",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation):
@@ -79,10 +79,9 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
             for segment in segments:
                 if "-" in segment:
                     start, end = map(int, segment.split("-"))
-                    selected_images.extend(all_images_in_board[-end : -start + 1])
+                    selected_images.extend(all_images_in_board[-end:])
                 elif segment.isdigit():
                     index = int(segment)
-
                     if len(segments) == 1:
                         selected_images.extend(all_images_in_board[-index:])
                     else:
