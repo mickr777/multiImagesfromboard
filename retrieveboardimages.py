@@ -49,7 +49,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
     )
 
     def get_metadata(self, image_name, context):
-        metadata = context.services.image_records.get_metadata(image_name)
+        metadata = context.services.images.get_metadata(image_name)
 
         if metadata:
             print(f"Metadata for image {image_name}: {metadata}")
