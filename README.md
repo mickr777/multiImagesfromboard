@@ -1,4 +1,6 @@
-# Retrieve Images from Board for multi image input
+# Retrieve Images from Board for multi image input or to save board to zip
+(retrieveboardimages.py)
+
 ## Community Node For InvokeAI
 
 ![image](https://github.com/mickr777/multiImagesfromboard/assets/115216705/3ef4c7e0-e6cd-48c4-b3de-70ed1b160361)
@@ -21,3 +23,19 @@ For Number of Images
 | `save_metadata` | Save metadata as JSON files for each image if available.|
 | `save_to_zip` | Saves all retrieved images to a zip file.|
 | `save_location` | Specify the save location for the ZIP file.|
+
+
+# Upload bluk images from folder or zip to add to board (using save to gallery) or use in work flow (Alpha)
+(importimages.py)
+
+## Community Node For InvokeAI
+
+![image](https://github.com/mickr777/multiImagesfromboard/assets/115216705/93a7f50b-cbf8-49e5-b8da-8f0ab6e235bf)
+
+
+### Inputs
+| Parameter     | Description                                 
+|---------------|---------------------------------------------|
+| `zip_path`  | Path to the ZIP file containing images.|
+| `folder_path` | Path to the folder containing images.|
+| `save_metadata` | Pick Board to add output to.|
