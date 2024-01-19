@@ -25,7 +25,7 @@ For Number of Images
 | `save_location` | Specify the save location for the ZIP file.|
 
 
-# Upload bluk images from folder or zip to add to board (using save to gallery) or use in work flow (Alpha)
+# Upload bulk images from folder or zip to add to board (using save to gallery) or use in work flow (Alpha)
 (importimages.py)
 
 ## Community Node For InvokeAI
