@@ -3,8 +3,7 @@
 
 ## Community Node For InvokeAI
 
-![image](https://github.com/mickr777/multiImagesfromboard/assets/115216705/3ef4c7e0-e6cd-48c4-b3de-70ed1b160361)
-
+![image](https://github.com/mickr777/multiImagesfromboard/assets/115216705/ebf8bbfb-e35e-4f1a-8172-8564b8fdbbd9)
 
 ## Description
 Retrieves Images from any board and output them as a collection, to be used as a multi image input
