@@ -27,7 +27,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.2.3",
+    version="0.3.6",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation):
