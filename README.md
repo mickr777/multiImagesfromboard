@@ -37,4 +37,4 @@ For Number of Images
 |---------------|---------------------------------------------|
 | `zip_path`  | Path to the ZIP file containing images.|
 | `folder_path` | Path to the folder containing images.|
-| `save_metadata` | Pick Board to add output to.|
+| `board` | Pick Board to add output to.|
