@@ -1,4 +1,6 @@
 # Retrieve Images from Board for multi image input
+![image](https://github.com/user-attachments/assets/9ede3e16-f17c-44c2-a4a1-af490ad30ba4)
+
 (retrieveboardimages.py)
 
 ## Community Node For InvokeAI
