@@ -11,13 +11,12 @@ from invokeai.invocation_api import (
 from invokeai.app.services.image_records.image_records_common import ImageCategory
 from invokeai.app.services.shared.sqlite.sqlite_common import SQLiteDirection
 
-
 @invocation(
     "Retrieve_Board_Images",
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.5.0",
+    version="0.6.0",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation):
@@ -31,6 +30,10 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
     category: Literal["images", "assets"] = InputField(
         description="Category of images to retrieve; select either 'images' or 'assets'",
         default="images",
+    )
+    starred_only: bool = InputField(
+        description="Retrieve only starred images if set to True",
+        default=False,
     )
 
     def invoke(self, context: InvocationContext) -> ImageCollectionOutput:
@@ -49,9 +52,14 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
             order_dir=SQLiteDirection.Descending,
         )
 
-        all_images_in_board = [record.image_name for record in image_results.items]
+        all_images_in_board = [
+            record.image_name
+            for record in image_results.items
+            if not self.starred_only or record.starred
+        ]
+
         if not all_images_in_board:
-            raise ValueError("No images found for the specified board and category.")
+            raise ValueError("No images found for the specified board, category, and starred status.")
 
         selected_images = []
 
