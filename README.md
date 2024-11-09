@@ -16,6 +16,7 @@ For Number of Images
 |---------------|---------------------------------------------|
 | `input_board`  | Input board containing images to be retrieved.|
 | `num_images` | Number of images to retrieve from the end.|
+| `category` | Category of images to retrieve; select either 'images' or 'assets'.|
 
 
 # Upload bulk images from folder or zip to add to board (using save to gallery) or use in work flow (Alpha)
