@@ -1,4 +1,3 @@
-import os
 from invokeai.invocation_api import (
     BaseInvocation,
     InvocationContext,
@@ -9,14 +8,13 @@ from invokeai.invocation_api import (
     BoardField,
 )
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @invocation(
     "Retrieve_Board_Images",
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.4.0",
+    version="0.4.2",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation):
@@ -24,7 +22,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
         description="Input board containing images to be retrieved"
     )
     num_images: str = InputField(
-        description="Number of images to retrieve from the end, a range like '30-50', or 'all' for all images.",
+        description="Number of images to retrieve from the end, a range like '30-50', '1,4,6' '10' or 'all' for all images.",
         default="all",
     )
 
@@ -55,17 +53,18 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
             for segment in segments:
                 if "-" in segment:
                     start, end = map(int, segment.split("-"))
-                    selected_images.extend(all_images_in_board[-end:])
+                    if start > end:
+                        raise ValueError(
+                            f"Invalid range: {segment}. Start cannot be greater than end."
+                        )
+                    selected_images.extend(
+                        all_images_in_board[start - 1 : end]
+                    )
                 elif segment.isdigit():
                     index = int(segment)
-                    if len(segments) == 1:
-                        selected_images.extend(all_images_in_board[-index:])
-                    else:
-                        selected_images.append(all_images_in_board[-index])
+                    selected_images.append(all_images_in_board[-index])
 
         output_images = [
             ImageField(image_name=image_name) for image_name in selected_images
         ]
-        return ImageCollectionOutput(
-            collection=output_images
-        )
+        return ImageCollectionOutput(collection=output_images)
