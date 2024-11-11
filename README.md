@@ -1,7 +1,4 @@
 # Retrieve Images from Board for multi image input
-![image](https://github.com/user-attachments/assets/9ede3e16-f17c-44c2-a4a1-af490ad30ba4)
-
-(retrieveboardimages.py)
 
 ## Community Node For InvokeAI
 
@@ -20,3 +17,4 @@ For Number of Images
 | `num_images` | Number of images to retrieve from the end.|
 | `category` | Category of images to retrieve; select either 'images' or 'assets'.|
 | `starred_only` | Retrieve only starred images if set to True.|
+| `keyword` | Keyword to filter images by metadata. Only images with metadata containing this keyword will be retrieved.|
