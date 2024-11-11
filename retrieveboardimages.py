@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 from invokeai.invocation_api import (
     BaseInvocation,
     InvocationContext,
@@ -7,6 +7,7 @@ from invokeai.invocation_api import (
     ImageField,
     ImageCollectionOutput,
     BoardField,
+    WithMetadata
 )
 from invokeai.app.services.image_records.image_records_common import ImageCategory
 from invokeai.app.services.shared.sqlite.sqlite_common import SQLiteDirection
@@ -17,10 +18,10 @@ from invokeai.app.services.shared.sqlite.sqlite_common import SQLiteDirection
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.6.1",
+    version="0.6.5",
     use_cache=False,
 )
-class RetrieveBoardImagesInvocation(BaseInvocation):
+class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
     input_board: BoardField = InputField(
         description="Input board containing images to be retrieved"
     )
@@ -35,6 +36,10 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
     starred_only: bool = InputField(
         description="Retrieve only starred images if set to True",
         default=False,
+    )
+    keyword: Optional[str] = InputField(
+        description="Keyword to filter images by metadata. Only images with metadata containing this keyword will be retrieved.",
+        default=None,
     )
 
     def invoke(self, context: InvocationContext) -> ImageCollectionOutput:
@@ -53,6 +58,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
             order_dir=SQLiteDirection.Descending,
             limit=-1,
             offset=0,
+            search_term=self.keyword,
         )
 
         all_images_in_board = [
@@ -63,7 +69,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation):
 
         if not all_images_in_board:
             raise ValueError(
-                "No images found for the specified board, category, and starred status."
+                "No images found for the specified board, category, keyword, and starred status."
             )
 
         selected_images = []
