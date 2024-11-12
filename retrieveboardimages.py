@@ -1,4 +1,5 @@
-from typing import Literal, Optional
+from typing import List, Literal, Optional
+from pydantic import BaseModel, Field
 from invokeai.invocation_api import (
     BaseInvocation,
     InvocationContext,
@@ -6,19 +7,21 @@ from invokeai.invocation_api import (
     InputField,
     ImageField,
     ImageCollectionOutput,
-    BoardField,
-    WithMetadata
+    WithMetadata,
 )
 from invokeai.app.services.image_records.image_records_common import ImageCategory
 from invokeai.app.services.shared.sqlite.sqlite_common import SQLiteDirection
 
+class BoardField(BaseModel):
+    """A board primitive field"""
+    board_id: str = Field(description="The id of the board")
 
 @invocation(
     "Retrieve_Board_Images",
     title="Retrieve Images from Board",
     tags=["image", "board"],
     category="image",
-    version="0.6.5",
+    version="0.6.6",
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
@@ -61,9 +64,18 @@ class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
             search_term=self.keyword,
         )
 
+        selected_images = self.select_images(image_results.items)
+
+        output_images = [
+            ImageField(image_name=image_name) for image_name in selected_images
+        ]
+        return ImageCollectionOutput(collection=output_images)
+
+    def select_images(self, image_results: List) -> List[str]:
+        """Helper method to filter and select images based on num_images and starred_only."""
         all_images_in_board = [
             record.image_name
-            for record in image_results.items
+            for record in image_results
             if not self.starred_only or record.starred
         ]
 
@@ -96,7 +108,4 @@ class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
                             f"There are only {len(all_images_in_board)} images available in the selected board."
                         )
 
-        output_images = [
-            ImageField(image_name=image_name) for image_name in selected_images
-        ]
-        return ImageCollectionOutput(collection=output_images)
+        return selected_images
