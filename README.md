@@ -13,7 +13,7 @@ For Number of Images
 ### Inputs
 | Parameter     | Description                                 
 |---------------|---------------------------------------------|
-| `input_board`  | Input board containing images to be retrieved. If not provided or set to None, will will grab images from uncategorized.|
+| `input_board`  | Input board containing images to be retrieved. If not provided or set to None, it will grab images from uncategorized.|
 | `num_images` | Number of images to retrieve from the end.|
 | `category` | Category of images to retrieve; select either 'images' or 'assets'.|
 | `starred_only` | Retrieve only starred images if set to True.|
