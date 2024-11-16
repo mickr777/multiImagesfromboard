@@ -12,9 +12,12 @@ from invokeai.invocation_api import (
 from invokeai.app.services.image_records.image_records_common import ImageCategory
 from invokeai.app.services.shared.sqlite.sqlite_common import SQLiteDirection
 
+
 class BoardField(BaseModel):
-    """A board primitive field"""
-    board_id: str = Field(description="The id of the board")
+    """A board primitive field."""
+
+    board_id: Optional[str] = Field(default=None, description="The id of the board.")
+
 
 @invocation(
     "Retrieve_Board_Images",
@@ -25,19 +28,20 @@ class BoardField(BaseModel):
     use_cache=False,
 )
 class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
-    input_board: BoardField = InputField(
-        description="Input board containing images to be retrieved"
+    input_board: Optional[BoardField] = InputField(
+        default=None,
+        description="Input board containing images to be retrieved. If not provided or set to None, will will grab images from uncategorized.",
     )
     num_images: str = InputField(
-        description="Number of images to retrieve: can specify a range like '30-50', specific indices like '1,4,6', a single index like '10', or 'all' for all images.",
+        description="Number of images to retrieve: specify 'all', a single index like '10', specific indices like '1,4,6', or a range like '30-50'.",
         default="all",
     )
     category: Literal["images", "assets"] = InputField(
-        description="Category of images to retrieve; select either 'images' or 'assets'",
+        description="Category of images to retrieve; select either 'images' or 'assets'.",
         default="images",
     )
     starred_only: bool = InputField(
-        description="Retrieve only starred images if set to True",
+        description="Retrieve only starred images if set to True.",
         default=False,
     )
     keyword: Optional[str] = InputField(
@@ -48,15 +52,21 @@ class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
     def invoke(self, context: InvocationContext) -> ImageCollectionOutput:
         if self.category == "images":
             category_enum = ImageCategory.GENERAL
-        elif self.category == "assets":
+        else:
             category_enum = ImageCategory.USER
 
         image_records = context._services.image_records
         if not image_records:
-            raise ValueError("Image records service is not available.")
+            raise ValueError("Image records service is unavailable.")
+
+        board_id = (
+            self.input_board.board_id
+            if self.input_board and self.input_board.board_id
+            else "none"
+        )
 
         image_results = image_records.get_many(
-            board_id=self.input_board.board_id,
+            board_id=board_id,
             categories=[category_enum],
             order_dir=SQLiteDirection.Descending,
             limit=-1,
@@ -65,6 +75,9 @@ class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
         )
 
         selected_images = self.select_images(image_results.items)
+
+        if not selected_images:
+            return ImageCollectionOutput(collection=[])
 
         output_images = [
             ImageField(image_name=image_name) for image_name in selected_images
@@ -80,9 +93,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
         ]
 
         if not all_images_in_board:
-            raise ValueError(
-                "No images found for the specified board, category, keyword, and starred status."
-            )
+            return []
 
         selected_images = []
 
@@ -95,7 +106,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
                     start, end = map(int, segment.split("-"))
                     if start > end:
                         raise ValueError(
-                            f"Invalid range: {segment}. Start cannot be greater than end."
+                            f"Invalid range '{segment}': start cannot be greater than end."
                         )
                     selected_images.extend(all_images_in_board[start - 1 : end])
                 elif segment.isdigit():
@@ -104,8 +115,7 @@ class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
                         selected_images.append(all_images_in_board[index - 1])
                     else:
                         raise ValueError(
-                            f"Invalid index {index}. Please select an index between 1 and {len(all_images_in_board)}. "
-                            f"There are only {len(all_images_in_board)} images available in the selected board."
+                            f"Invalid index '{index}': choose between 1 and {len(all_images_in_board)}."
                         )
 
         return selected_images
