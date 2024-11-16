@@ -30,7 +30,7 @@ class BoardField(BaseModel):
 class RetrieveBoardImagesInvocation(BaseInvocation, WithMetadata):
     input_board: Optional[BoardField] = InputField(
         default=None,
-        description="Input board containing images to be retrieved. If not provided or set to None, will will grab images from uncategorized.",
+        description="Input board containing images to be retrieved. If not provided or set to None, it will grab images from uncategorized.",
     )
     num_images: str = InputField(
         description="Number of images to retrieve: specify 'all', a single index like '10', specific indices like '1,4,6', or a range like '30-50'.",
